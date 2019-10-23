@@ -76,7 +76,7 @@ def context(context):
     if context not in available_contexts:
         click.secho("context {} not found".format(context), fg="red")
         click.Abort()
-    c['current'] == context
+    c['current'] = context
     with open('bigip.yaml', 'w') as outfile:
         yaml.dump(c, outfile, default_flow_style=False)
 
