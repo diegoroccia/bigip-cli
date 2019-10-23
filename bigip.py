@@ -33,6 +33,15 @@ def get_members(ctx, args, incomplete):
     except:
         pass
 
+def get_contexts(ctx, args, incomplete):
+    try:
+        c = yaml.load(open("bigip.yaml"), Loader=yaml.FullLoader) 
+        available_contexts = c['hosts'].keys()
+        return available_contexts
+    except:
+        pass
+
+
 @click.group()
 @click.option('--partition', type=click.STRING, default='Common')
 @click.option('--pool', type=click.STRING, autocompletion=get_pools)
@@ -54,6 +63,24 @@ def pool():
 @cli.group()
 def member():
     pass
+
+@cli.group()
+def config():
+    pass
+
+@config.command()
+@click.argument('context', type=click.STRING, autocompletion=get_contexts)
+def context(context):
+    c = yaml.load(open("bigip.yaml"), Loader=yaml.FullLoader) 
+    available_contexts = c['hosts'].keys()
+    if context not in available_contexts:
+        click.secho("context {} not found".format(context), fg="red")
+        click.Abort()
+    c['current'] == context
+    with open('bigip.yaml', 'w') as outfile:
+        yaml.dump(c, outfile, default_flow_style=False)
+
+    
 
 @pool.command(name="list")
 @click.pass_context
